@@ -5,7 +5,7 @@ import (
 	"flag"
 	"testing"
 
-	"github.com/tv42/zbase32"
+	"gopkg.in/corvus-ch/zbase32.v0"
 )
 
 func TestFlagString(t *testing.T) {

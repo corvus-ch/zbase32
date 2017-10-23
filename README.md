@@ -11,7 +11,7 @@ Note that this is **not** RFC 4648/3548, for that see
 is a variant that aims to be more human-friendly, and in some
 circumstances shorter.
 
-For usage, see [godoc](http://godoc.org/pkg/github.com/tv42/zbase32/).
+For usage, see [godoc](https://godoc.org/gopkg.in/corvus-ch/zbase32.v0).
 
 ## Command line utilities
 

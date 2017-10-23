@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/tv42/zbase32"
+	"gopkg.in/corvus-ch/zbase32.v0"
 )
 
 type bitTestCase struct {

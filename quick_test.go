@@ -11,7 +11,7 @@ import (
 	"testing"
 	"testing/quick"
 
-	"github.com/tv42/zbase32"
+	"gopkg.in/corvus-ch/zbase32.v0"
 )
 
 var python = flag.Bool("python", false, "run comparison tests against Python zbase32 library")

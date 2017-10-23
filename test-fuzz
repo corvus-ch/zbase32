@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-go-fuzz-build github.com/tv42/zbase32
+go-fuzz-build gopkg.in/corvus-ch/zbase32.v0
 install -d fuzz
 # kludge to extract corpus from tests
 perl -ne 'print "$1\n" if /"([ybndrfg8ejkmcpqxot1uwisza345h769]+)"/' zbase32_test.go \

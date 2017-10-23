@@ -16,7 +16,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/tv42/zbase32"
+	"gopkg.in/corvus-ch/zbase32.v0"
 )
 
 var prog = filepath.Base(os.Args[0])

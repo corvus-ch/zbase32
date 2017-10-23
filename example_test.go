@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/tv42/zbase32"
+	"gopkg.in/corvus-ch/zbase32.v0"
 )
 
 func Example() {
