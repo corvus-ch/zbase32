@@ -6,7 +6,7 @@ go:
   - tip
 
 script:
-  - go test -coverprofile=coverage.txt -covermode=atomic
+  - make test test_args="-coverprofile=coverage.txt -covermode=atomic -v"
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
