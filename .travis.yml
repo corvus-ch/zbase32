@@ -5,6 +5,8 @@ go:
   - 1.9
   - tip
 
+go_import_path: gopkg.in/corvus-ch/zbase32.v0
+
 script:
   - make test test_args="-coverprofile=coverage.txt -covermode=atomic -v"
 
