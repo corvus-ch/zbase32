@@ -2,7 +2,7 @@
 
 [![Build Status](https://img.shields.io/travis/corvus-ch/zbase32.svg)](https://travis-ci.org/corvus-ch/zbase32)
 [![Test Coverage](https://img.shields.io/codecov/c/github/corvus-ch/zbase32.svg)](https://codecov.io/gh/corvus-ch/zbase32)
-[![Documentation](https://godoc.org/gopgk.in/corvus-ch/zbase32.v0?status.svg)](https://godoc.org/gopkg.in/corvus-ch/zbase32.v0)
+[![Documentation](https://godoc.org/gopgk.in/corvus-ch/zbase32.v1?status.svg)](https://godoc.org/gopkg.in/corvus-ch/zbase32.v1)
 
 
 Golang pacakge which implements base32 encoding of binary data according to

@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/droundy/goopt"
-	"gopkg.in/corvus-ch/zbase32.v0"
+	"gopkg.in/corvus-ch/zbase32.v1"
 )
 
 const success = 0

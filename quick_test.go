@@ -10,7 +10,7 @@ import (
 	"testing"
 	"testing/quick"
 
-	"gopkg.in/corvus-ch/zbase32.v0"
+	"gopkg.in/corvus-ch/zbase32.v1"
 )
 
 var python bool

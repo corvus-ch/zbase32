@@ -70,7 +70,7 @@ ${venv_check_path}:
 	touch $@
 
 ${fuzz_pkg_path}: **/*.go
-	go-fuzz-build gopkg.in/corvus-ch/zbase32.v0
+	go-fuzz-build gopkg.in/corvus-ch/zbase32.v1
 
 .PHONY: clean
 clean:
