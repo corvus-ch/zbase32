@@ -12,9 +12,9 @@ import (
 const success = 0
 const generalError = 1
 
-var inputFlag = goopt.StringWithLabel([]string{"-i", "--input"},"-","PATH","Input file (defaults to STDIN)")
-var outputFlag = goopt.StringWithLabel([]string{"-o", "--output"},"-","PATH","Output file (defaults to STDOUT)")
-var decodeFlag = goopt.Flag([]string{"-D", "--decode"}, nil,"Decodes the input", "")
+var inputFlag = goopt.StringWithLabel([]string{"-i", "--input"}, "-", "PATH", "Input file (defaults to STDIN)")
+var outputFlag = goopt.StringWithLabel([]string{"-o", "--output"}, "-", "PATH", "Output file (defaults to STDOUT)")
+var decodeFlag = goopt.Flag([]string{"-D", "--decode"}, nil, "Decodes the input", "")
 
 func main() {
 	os.Exit(run())
