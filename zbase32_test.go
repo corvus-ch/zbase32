@@ -2,6 +2,7 @@ package zbase32_test
 
 import (
 	"bytes"
+	"io"
 	"testing"
 
 	"gopkg.in/corvus-ch/zbase32.v0"
@@ -68,9 +69,10 @@ var byteTests = []byteTestCase{
 }
 
 func TestEncodeBits(t *testing.T) {
+	enc := zbase32.StdEncoding
 	for _, tc := range bitTests {
-		dst := make([]byte, zbase32.EncodedLen(len(tc.decoded)))
-		n := zbase32.EncodeBits(dst, tc.decoded, tc.bits)
+		dst := make([]byte, enc.EncodedLen(len(tc.decoded)))
+		n := enc.EncodeBits(dst, tc.decoded, tc.bits)
 		dst = dst[:n]
 		if g, e := string(dst), tc.encoded; g != e {
 			t.Errorf("EncodeBits %d bits of %x wrong result: %q != %q", tc.bits, tc.decoded, g, e)
@@ -80,8 +82,9 @@ func TestEncodeBits(t *testing.T) {
 }
 
 func TestEncodeBitsString(t *testing.T) {
+	enc := zbase32.StdEncoding
 	for _, tc := range bitTests {
-		s := zbase32.EncodeBitsToString(tc.decoded, tc.bits)
+		s := enc.EncodeBitsToString(tc.decoded, tc.bits)
 		if g, e := s, tc.encoded; g != e {
 			t.Errorf("EncodeBitsToString %d bits of %x wrong result: %q != %q", tc.bits, tc.decoded, g, e)
 			continue
@@ -90,9 +93,10 @@ func TestEncodeBitsString(t *testing.T) {
 }
 
 func TestEncodeBytes(t *testing.T) {
+	enc := zbase32.StdEncoding
 	for _, tc := range byteTests {
-		dst := make([]byte, zbase32.EncodedLen(len(tc.decoded)))
-		n := zbase32.Encode(dst, tc.decoded)
+		dst := make([]byte, enc.EncodedLen(len(tc.decoded)))
+		n := enc.Encode(dst, tc.decoded)
 		dst = dst[:n]
 
 		if g, e := string(dst), tc.encoded; g != e {
@@ -103,6 +107,7 @@ func TestEncodeBytes(t *testing.T) {
 }
 
 func TestEncodeBitsMasksExcess(t *testing.T) {
+	enc := zbase32.StdEncoding
 	for _, tc := range []bitTestCase{
 		{0, []byte{255, 255}, ""},
 		{1, []byte{255, 255}, "o"},
@@ -122,8 +127,8 @@ func TestEncodeBitsMasksExcess(t *testing.T) {
 		{15, []byte{255, 255}, "999"},
 		{16, []byte{255, 255}, "999o"},
 	} {
-		dst := make([]byte, zbase32.EncodedLen(len(tc.decoded)))
-		n := zbase32.EncodeBits(dst, tc.decoded, tc.bits)
+		dst := make([]byte, enc.EncodedLen(len(tc.decoded)))
+		n := enc.EncodeBits(dst, tc.decoded, tc.bits)
 		dst = dst[:n]
 		if g, e := string(dst), tc.encoded; g != e {
 			t.Errorf("EncodeBits %d bits of %x wrong result: %q != %q", tc.bits, tc.decoded, g, e)
@@ -131,10 +136,36 @@ func TestEncodeBitsMasksExcess(t *testing.T) {
 	}
 }
 
+func TestEncoder(t *testing.T) {
+	for _, tc := range byteTests {
+		for bs := int64(1); bs < 128; bs += 4 {
+			in := bytes.NewReader(tc.decoded)
+			buf := new(bytes.Buffer)
+			enc := zbase32.NewEncoder(zbase32.StdEncoding, buf)
+			for {
+				if _, err := io.CopyN(enc, in, bs); io.EOF == err {
+					break
+				} else if nil != err {
+					t.Errorf("Failed to encode: %v", err)
+				}
+			}
+			if err := enc.Close(); nil != err {
+				t.Errorf("Failed to close encoder: %v", err)
+			}
+
+			if g, e := buf.String(), tc.encoded; g != e {
+				t.Errorf("Encode %x wrong result: %q != %q", tc.decoded, g, e)
+				continue
+			}
+		}
+	}
+}
+
 func TestDecodeBits(t *testing.T) {
+	enc := zbase32.StdEncoding
 	for _, tc := range bitTests {
-		dst := make([]byte, zbase32.DecodedLen(len(tc.encoded)))
-		n, err := zbase32.DecodeBits(dst, []byte(tc.encoded), tc.bits)
+		dst := make([]byte, enc.DecodedLen(len(tc.encoded)))
+		n, err := enc.DecodeBits(dst, []byte(tc.encoded), tc.bits)
 		dst = dst[:n]
 		if err != nil {
 			t.Errorf("DecodeBits %d bits from %q: error: %v", tc.bits, tc.encoded, err)
@@ -148,7 +179,7 @@ func TestDecodeBits(t *testing.T) {
 
 func TestDecodeBitsString(t *testing.T) {
 	for _, tc := range bitTests {
-		dec, err := zbase32.DecodeBitsString(tc.encoded, tc.bits)
+		dec, err := zbase32.StdEncoding.DecodeBitsString(tc.encoded, tc.bits)
 		if err != nil {
 			t.Errorf("DecodeBits %d bits from %q: error: %v", tc.bits, tc.encoded, err)
 			continue
@@ -160,9 +191,10 @@ func TestDecodeBitsString(t *testing.T) {
 }
 
 func TestDecodeBytes(t *testing.T) {
+	enc := zbase32.StdEncoding
 	for _, tc := range byteTests {
-		dst := make([]byte, zbase32.DecodedLen(len(tc.encoded)))
-		n, err := zbase32.Decode(dst, []byte(tc.encoded))
+		dst := make([]byte, enc.DecodedLen(len(tc.encoded)))
+		n, err := enc.Decode(dst, []byte(tc.encoded))
 		dst = dst[:n]
 		if err != nil {
 			t.Errorf("Decode %q: error: %v", tc.encoded, err)
@@ -176,7 +208,7 @@ func TestDecodeBytes(t *testing.T) {
 
 func TestDecodeBad(t *testing.T) {
 	input := `foo!bar`
-	_, err := zbase32.DecodeString(input)
+	_, err := zbase32.StdEncoding.DecodeString(input)
 	switch err := err.(type) {
 	case nil:
 		t.Fatalf("expected error from bad decode")
@@ -186,5 +218,24 @@ func TestDecodeBad(t *testing.T) {
 		}
 	default:
 		t.Fatalf("wrong error from bad decode: %T: %v", err, err)
+	}
+}
+
+func TestDecoder(t *testing.T) {
+	for _, tc := range byteTests {
+		for bs := int64(1); bs < 128; bs += 4 {
+			var buf bytes.Buffer
+			dec := zbase32.NewDecoder(zbase32.StdEncoding, bytes.NewReader([]byte(tc.encoded)))
+			for {
+				if _, err := io.CopyN(&buf, dec, bs); io.EOF == err {
+					break
+				} else if nil != err {
+					t.Errorf("Failed to decode: %v", err)
+				}
+			}
+			if g, e := buf.String(), string(tc.decoded); g != e {
+				t.Errorf("Decode %x wrong result: %q != %q", tc.decoded, g, e)
+			}
+		}
 	}
 }

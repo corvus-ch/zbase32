@@ -14,11 +14,11 @@ func BenchmarkEncodeBytes(b *testing.B) {
 		0x4e, 0xf8, 0x44, 0x3b, 0xb2, 0xa8, 0x59, 0xc7,
 		0x5f, 0xc3, 0xcc, 0x6a, 0xf2, 0x6d, 0x5a, 0xaa,
 	}
-	dst := make([]byte, zbase32.EncodedLen(len(decoded)))
+	dst := make([]byte, zbase32.StdEncoding.EncodedLen(len(decoded)))
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		n := zbase32.Encode(dst, decoded)
+		n := zbase32.StdEncoding.Encode(dst, decoded)
 		_ = dst[:n]
 	}
 }
@@ -55,11 +55,11 @@ func BenchmarkEncodeHex(b *testing.B) {
 
 func BenchmarkDecodeBytes(b *testing.B) {
 	encoded := []byte("ab3sr1ix8fhfnuzaeo75fkn3a7xh8udk6jsiiko")
-	dst := make([]byte, zbase32.DecodedLen(len(encoded)))
+	dst := make([]byte, zbase32.StdEncoding.DecodedLen(len(encoded)))
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		n, err := zbase32.Decode(dst, encoded)
+		n, err := zbase32.StdEncoding.Decode(dst, encoded)
 		if err != nil {
 			b.Fatalf("decode error: %v", err)
 		}

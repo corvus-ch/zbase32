@@ -7,4 +7,6 @@ if [ ! -e virtualenv/ok ]; then
     touch virtualenv/ok
 fi
 
-PATH="$PWD/virtualenv/bin:$PATH" go test -python -test.run=Python "$@"
+source $PWD/virtualenv/bin/activate
+
+go test -test.run=Python "$@"

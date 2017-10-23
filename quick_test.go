@@ -2,7 +2,6 @@ package zbase32_test
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -14,7 +13,21 @@ import (
 	"gopkg.in/corvus-ch/zbase32.v0"
 )
 
-var python = flag.Bool("python", false, "run comparison tests against Python zbase32 library")
+var python bool
+
+func init() {
+	cmd := exec.Command("python", "-c", `
+import sys, imp
+try:
+    imp.find_module('zbase32')
+    sys.exit(0)
+except ImportError:
+    sys.exit(1)
+`)
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	python = nil == err
+}
 
 func calcBits(orig []byte, partial uint) int {
 	bits := 8 * uint(len(orig))
@@ -30,8 +43,8 @@ func calcBits(orig []byte, partial uint) int {
 func TestQuickRoundtripBits(t *testing.T) {
 	fn := func(orig []byte, partial uint) bool {
 		bits := calcBits(orig, partial)
-		encoded := zbase32.EncodeBitsToString(orig, bits)
-		decoded, err := zbase32.DecodeBitsString(encoded, bits)
+		encoded := zbase32.StdEncoding.EncodeBitsToString(orig, bits)
+		decoded, err := zbase32.StdEncoding.DecodeBitsString(encoded, bits)
 		if err != nil {
 			t.Logf("orig=\t%x", orig)
 			t.Logf("bits=\t%d", bits)
@@ -54,8 +67,8 @@ func TestQuickRoundtripBits(t *testing.T) {
 
 func TestQuickRoundtripBytes(t *testing.T) {
 	fn := func(orig []byte) bool {
-		encoded := zbase32.EncodeToString(orig)
-		decoded, err := zbase32.DecodeString(encoded)
+		encoded := zbase32.StdEncoding.EncodeToString(orig)
+		decoded, err := zbase32.StdEncoding.DecodeString(encoded)
 		if err != nil {
 			t.Logf("orig=\t%x", orig)
 			t.Logf("enc=\t%q", encoded)
@@ -75,12 +88,12 @@ func TestQuickRoundtripBytes(t *testing.T) {
 }
 
 func TestQuickPythonEncodeBits(t *testing.T) {
-	if !*python {
+	if !python {
 		t.Skip("Skipping, use -python to enable")
 	}
 	us := func(orig []byte, partial uint) (string, error) {
 		bits := calcBits(orig, partial)
-		encoded := zbase32.EncodeBitsToString(orig, bits)
+		encoded := zbase32.StdEncoding.EncodeBitsToString(orig, bits)
 		return encoded, nil
 	}
 	them := func(orig []byte, partial uint) (string, error) {
@@ -111,13 +124,13 @@ sys.stdout.write(zbase32.b2a_l(orig, bits))
 }
 
 func TestQuickPythonDecodeBits(t *testing.T) {
-	if !*python {
+	if !python {
 		t.Skip("Skipping, use -python to enable")
 	}
 	us := func(orig []byte, partial uint) ([]byte, error) {
 		bits := calcBits(orig, partial)
-		encoded := zbase32.EncodeBitsToString(orig, bits)
-		return zbase32.DecodeBitsString(encoded, bits)
+		encoded := zbase32.StdEncoding.EncodeBitsToString(orig, bits)
+		return zbase32.StdEncoding.DecodeBitsString(encoded, bits)
 	}
 	them := func(orig []byte, partial uint) ([]byte, error) {
 		// the python library raises IndexError on zero-length input
@@ -125,7 +138,7 @@ func TestQuickPythonDecodeBits(t *testing.T) {
 			return []byte{}, nil
 		}
 		bits := calcBits(orig, partial)
-		encoded := zbase32.EncodeBitsToString(orig, bits)
+		encoded := zbase32.StdEncoding.EncodeBitsToString(orig, bits)
 
 		cmd := exec.Command("python", "-c", `
 import sys, zbase32
@@ -149,11 +162,11 @@ sys.stdout.write(zbase32.a2b_l(enc, bits))
 }
 
 func TestQuickPythonEncodeBytes(t *testing.T) {
-	if !*python {
+	if !python {
 		t.Skip("Skipping, use -python to enable")
 	}
 	us := func(orig []byte) (string, error) {
-		encoded := zbase32.EncodeToString(orig)
+		encoded := zbase32.StdEncoding.EncodeToString(orig)
 		return encoded, nil
 	}
 	them := func(orig []byte) (string, error) {
@@ -180,19 +193,19 @@ sys.stdout.write(zbase32.b2a(orig))
 }
 
 func TestQuickPythonDecodeBytes(t *testing.T) {
-	if !*python {
+	if !python {
 		t.Skip("Skipping, use -python to enable")
 	}
 	us := func(orig []byte) ([]byte, error) {
-		encoded := zbase32.EncodeToString(orig)
-		return zbase32.DecodeString(encoded)
+		encoded := zbase32.StdEncoding.EncodeToString(orig)
+		return zbase32.StdEncoding.DecodeString(encoded)
 	}
 	them := func(orig []byte) ([]byte, error) {
 		// the python library raises IndexError on zero-length input
 		if len(orig) == 0 {
 			return []byte{}, nil
 		}
-		encoded := zbase32.EncodeToString(orig)
+		encoded := zbase32.StdEncoding.EncodeToString(orig)
 
 		cmd := exec.Command("python", "-c", `
 import sys, zbase32

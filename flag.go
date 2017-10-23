@@ -9,12 +9,12 @@ var _ flag.Value = (*Value)(nil)
 
 // String returns the z-base-32 encoding of the value.
 func (v *Value) String() string {
-	return EncodeToString(*v)
+	return StdEncoding.EncodeToString(*v)
 }
 
 // Set the value to data encoded by string.
 func (v *Value) Set(s string) error {
-	b, err := DecodeString(s)
+	b, err := StdEncoding.DecodeString(s)
 	if err != nil {
 		return err
 	}
