@@ -1,31 +1,45 @@
-# zbase32 -- Human-oriented encoding for binary data
+# z-base-32 - human-oriented base-32 encoding
 
-Package `zbase32` implements the `z-base-32` encoding as specified in
-http://philzimmermann.com/docs/human-oriented-base-32-encoding.txt
+[![Build Status](https://img.shields.io/travis/corvus-ch/zbase32.svg)](https://travis-ci.org/corvus-ch/zbase32)
+[![Test Coverage](https://img.shields.io/codecov/c/github/corvus-ch/zbase32.svg)](https://codecov.io/gh/corvus-ch/zbase32)
+[![Documentation](https://godoc.org/gopgk.in/corvus-ch/zbase32.v0?status.svg)](https://godoc.org/gopkg.in/corvus-ch/zbase32.v0)
 
-This package has been extensively tested to match the behavior of the
-[zbase32 Python package](https://pypi.python.org/pypi/zbase32/).
 
-Note that this is **not** RFC 4648/3548, for that see
-[encoding/base32](http://golang.org/pkg/encoding/base32/). `z-base-32`
-is a variant that aims to be more human-friendly, and in some
-circumstances shorter.
+Golang pacakge which implements base32 encoding of binary data according to
+http://philzimmermann.com/docs/human-oriented-base-32-encoding.txt.
 
-For usage, see [godoc](https://godoc.org/gopkg.in/corvus-ch/zbase32.v0).
+Note: this is *NOT* RFC4648 or RFC3548. If you need to be compatible to one of
+those RFCs, use `encoding/base32`.
+
+This package:
+
+* follows the example of `encoding/base32`;
+* supports encoding and decoding of byte arrays;
+* supports encoding and decoding using `io.Writer` and `io.Reader` interfaces.
+* provides a shell command which behaves similar to the BSD base64 command.
+
+Based on the work from `github.com/tv42/zbase32` by [Tommi
+Virtanen](https://github.com/tv42).
 
 ## Command line utilities
 
-Included are simple command-line utilities for encoding/decoding data.
+Included is a simple command-line utility for encoding/decoding data.
+
 Example:
 
 ```console
-$ echo hello, world | zbase32-encode
-pb1sa5dxfoo8q551pt1yw
-$ zbase32-decode pb1sa5dxfoo8q551pt1yw
-hello, world
-$ printf '\x01binary!!!1\x00' | zbase32-encode
+$ echo "Hello world" | zbase32
+jb1sa5dxrb5s6huccofy
+$ echo -n jb1sa5dxrb5s6huccofy | zbase32 --decode 
+Hello world
+$ printf '\x01binary!!!1\x00' | zbase32
 yftg15ubqjh1nejbgryy
-$ zbase32-decode yftg15ubqjh1nejbgryy | hexdump -C
+$ echo -n yftg15ubqjh1nejbgryy | zbase32 --decode | hexdump -C
 00000000  01 62 69 6e 61 72 79 21  21 21 31 00              |.binary!!!1.|
 0000000c
 ```
+
+## Contributing and license
+
+This library is licences under [MIT](LICENSE). For information about how to
+contribute, see [CONTRIBUTING](CONTRIBUTING.md)
